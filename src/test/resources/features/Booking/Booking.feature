@@ -26,7 +26,7 @@ Feature: Booking Category
       |Fecha de Registro  |Fecha de Salida |
       |2014-03-13         |2022-03-13      |
 
-  @RegressionTest @SmokeTest @asa
+  @RegressionTest @SmokeTest
   Scenario: Consultar reserva por id
     Given Las apis se encuentran disponibles
       And   Se obtiene un ID existente
@@ -36,12 +36,58 @@ Feature: Booking Category
 
   @RegressionTest
   Scenario: Consultar reserva para un usuario inexistente
-    When  Consultar el detalle de la reserva con el ID 99999
+    When  Consultar el detalle de la reserva con el ID "99999"
       Then  Verifico que el status de la API sea 404
 
+  @RegressionTest @SmokeTest
+  Scenario: El usuario puede crear una reserva exitosamente
+    Given Se creará un usuario con la siguiente información
+           |{Nombre}  |{Apellido}|{Precio} |{Deposito pagado?}|{Fecha de registro}|{Fecha de salida}|{Adicional} |
+           |Alexander |Gamarra   |99       |true              |2022-01-01         |2025-01-01       |yape        |
+    When  Cuando se ingresa la información en la api de registro
+    Then  Verifico que el status de la API sea 200
+    And   Verifico que la reserva se haya creado exitosamente
+
+  @RegressionTest
+  Scenario: El usuario no deberia poder crear una reserva con datos de una anterior reserva
+    Given Se creará un usuario con la siguiente información
+          |{Nombre}  |{Apellido}|{Precio} |{Deposito pagado?}|{Fecha de registro}|{Fecha de salida}|{Adicional} |
+          |Alexander |Gamarra   |99       |true              |2022-01-01         |2025-01-01       |yape        |
+    When  Cuando se ingresa la información en la api de registro
+    Then  Verifico que el status de la API sea 403
 
 
+  @RegressionTest @SmokeTest
+  Scenario: Actualizar información de una reserva
+    Given Las apis se encuentran disponibles
+        And  Se obtiene el token
+        And  Se obtiene un ID existente
+    When  Se actualiza la reserva con la siguiente información
+      |{Nombre}        |{Apellido}     |{Precio}|{Pagado?}|{Fecha de registro}|{Fecha de salida}|{Adicional} |
+      |firstNameUpdated|lastNameUpdated|888     |true     |2019-01-01         |2021-01-01       |test        |
+    Then  Verifico que el status de la API sea 200
+        And  Verifico que la reserva se haya actualizado exitosamente
 
+
+  @RegressionTest @SmokeTest
+  Scenario: Actualizar solo los nombres de la reserva
+    Given Las apis se encuentran disponibles
+        And  Se obtiene el token
+        And  Se obtiene un ID existente
+    When  Se actualiza los nombres de la reserva con la siguiente información
+            |{Nombre}           |{Apellido}       |
+            |firstNameUpdatedx2 |lastNameUpdatedx2|
+    Then  Verifico que el status de la API sea 200
+      And  Verifico que los nombres de la reserva se hayan actualizado exitosamente
+
+  @RegressionTest @SmokeTest
+  Scenario: Eliminar una reserva por ID
+    Given Las apis se encuentran disponibles
+        And  Se obtiene el token
+        And  Se obtiene un ID existente
+    When  Se elimina la reserva del ID obtenido
+        Then  Verifico que el status de la API sea 201
+        And   Verifico que la reserva se haya eliminado exitosamente
 
 
 

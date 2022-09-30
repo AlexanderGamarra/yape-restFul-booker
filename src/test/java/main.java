@@ -6,7 +6,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
-        tags = "@asa",
+        //tags = "@RegressionTes",
+        tags = "@SmokeTest",
         plugin = {"pretty"}
 )
 public class main {

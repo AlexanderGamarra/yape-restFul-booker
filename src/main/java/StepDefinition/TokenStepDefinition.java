@@ -33,4 +33,10 @@ public class TokenStepDefinition {
     @Given("El usuario no esta registrado en el sistema")
     public void elUsuarioNoEstaRegistradoEnElSistema() {
     }
+
+    @And("Se obtiene el token")
+    public void getToken() {
+        getTokenId("admin","password123");
+        tokenSteps.getToken();
+    }
 }
