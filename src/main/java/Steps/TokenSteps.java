@@ -1,5 +1,6 @@
 package Steps;
 
+import Entities.Utils;
 import io.cucumber.java.Before;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
@@ -67,11 +68,15 @@ public class TokenSteps {
 
     public void verifyStatusCode(int statusCode) {
         lastResponse().getBody().prettyPrint();
-        Assert.assertEquals(lastResponse().getStatusCode(), statusCode);
+        Assert.assertEquals(statusCode,lastResponse().getStatusCode());
     }
     public void verifyTokenAPIBodyResponse() {
         if(lastResponse().getBody().path("token")==null){fail("No existe la variable token en el body response");}
         if(lastResponse().getBody().path("token").equals("")){fail("La variable token se encuentra vacía");}
+    }
+    public void getToken() {
+        try{Utils.token = lastResponse().getBody().path("token").toString();}
+        catch (Exception e){fail("No se puede obtener el token");}
     }
 }
 

@@ -15,12 +15,15 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.rmi.CORBA.Util;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static net.serenitybdd.rest.SerenityRest.given;
 import static net.serenitybdd.rest.SerenityRest.lastResponse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 
@@ -147,8 +150,118 @@ public class BookingSteps {
             }
 
         }catch (Exception e){
-            fail("Una variable que no existe o cambio de nombre");
+            fail("Una variable cambio de nombre o no existe");
         }
+    }
+
+    public void verifyBookingInfo(Booking booking) {
+        try{
+            assertEquals(booking.getFirstname(),lastResponse().getBody().path("firstname").toString());
+            assertEquals(booking.getLastname(),lastResponse().getBody().path("lastname").toString());
+            assertEquals(String.valueOf(booking.getTotalprice()),lastResponse().getBody().path("totalprice").toString());
+            assertEquals(String.valueOf(booking.isDepositpaid()),lastResponse().getBody().path("depositpaid").toString());
+            assertEquals(booking.getBookingdates().getCheckin(),lastResponse().getBody().path("bookingdates.checkin").toString());
+            assertEquals(booking.getBookingdates().getCheckout(),lastResponse().getBody().path("bookingdates.checkout").toString());
+            assertEquals(booking.getAdditionalneeds(),lastResponse().getBody().path("additionalneeds").toString());
+
+        }catch (Exception e){
+            fail("Una variable cambio de nombre o no existe");
+        }
+    }
+
+    public void createBooking(Booking booking) {
+       response =
+                given().
+                        log().all().
+                        contentType("application/json").
+                        spec(requestSpec).body(booking).
+                when().
+                        post("https://restful-booker.herokuapp.com/booking").
+                then().
+                        contentType(ContentType.JSON).
+                        extract().response();
+    }
+
+    public void verifyBookingCreatedRecently() {
+        try{
+
+            Utils.id = String.valueOf(lastResponse().getBody().path("bookingid").toString());
+
+            assertEquals(Utils.booking.getFirstname(),lastResponse().getBody().path("booking.firstname").toString());
+            assertEquals(Utils.booking.getLastname(),lastResponse().getBody().path("booking.lastname").toString());
+            assertEquals(String.valueOf(Utils.booking.getTotalprice()),lastResponse().getBody().path("booking.totalprice").toString());
+            assertEquals(String.valueOf(Utils.booking.isDepositpaid()),lastResponse().getBody().path("booking.depositpaid").toString());
+            assertEquals(Utils.booking.getBookingdates().getCheckin(),lastResponse().getBody().path("booking.bookingdates.checkin").toString());
+            assertEquals(Utils.booking.getBookingdates().getCheckout(),lastResponse().getBody().path("booking.bookingdates.checkout").toString());
+            assertEquals(Utils.booking.getAdditionalneeds(),lastResponse().getBody().path("booking.additionalneeds").toString());
+
+        }catch (Exception e){
+            fail("Una variable cambio de nombre o no existe");
+        }
+    }
+    public void verifyBookingUpdatedRecently() {
+        try{
+
+            assertEquals(Utils.booking.getFirstname(),lastResponse().getBody().path("firstname").toString());
+            assertEquals(Utils.booking.getLastname(),lastResponse().getBody().path("lastname").toString());
+            assertEquals(String.valueOf(Utils.booking.getTotalprice()),lastResponse().getBody().path("totalprice").toString());
+            assertEquals(String.valueOf(Utils.booking.isDepositpaid()),lastResponse().getBody().path("depositpaid").toString());
+            assertEquals(Utils.booking.getBookingdates().getCheckin(),lastResponse().getBody().path("bookingdates.checkin").toString());
+            assertEquals(Utils.booking.getBookingdates().getCheckout(),lastResponse().getBody().path("bookingdates.checkout").toString());
+            assertEquals(Utils.booking.getAdditionalneeds(),lastResponse().getBody().path("additionalneeds").toString());
+
+        }catch (Exception e){
+            fail("Una variable cambio de nombre o no existe");
+        }
+    }
+
+    public void updateBooking(Booking booking,String token,String id) {
+        response =
+                given().
+                        log().all().
+                        header("Cookie","token="+token).
+                        contentType("application/json").
+                        spec(requestSpec).body(booking).
+                when().
+                        put("https://restful-booker.herokuapp.com/booking/"+id).
+                then().
+                        contentType(ContentType.JSON).
+                        extract().response();
+    }
+
+    public void updatePartialInfoBooking(Booking booking, String token, String id) {
+        String bodyRequest = "{\n" +
+                "    \"firstname\": \"{firstname}\",\n" +
+                "    \"lastname\": \"{lastname}\"\n" +
+                "}";
+        bodyRequest = bodyRequest.replace("{firstname}",booking.getFirstname()).replace("{lastname}",booking.getLastname());
+        response =
+                given().
+                        log().all().
+                        header("Cookie","token="+token).
+                        contentType("application/json").
+                        spec(requestSpec).
+                        body(bodyRequest).
+                when().
+                        patch("https://restful-booker.herokuapp.com/booking/"+id).
+                then().
+                        contentType(ContentType.JSON).
+                        extract().response();
+    }
+
+    public void verifyPartialInfoUpdated() {
+        assertEquals(Utils.booking.getFirstname(),lastResponse().getBody().path("booking.firstname").toString());
+        assertEquals(Utils.booking.getLastname(),lastResponse().getBody().path("booking.lastname").toString());
+    }
+
+    public void deleteBookingById(String id) {
+        response =
+                given().
+                        log().all().
+                        header("Cookie","token="+Utils.token).
+                        spec(requestSpec).
+                when().
+                        delete("https://restful-booker.herokuapp.com/booking/"+id);
     }
 }
 
