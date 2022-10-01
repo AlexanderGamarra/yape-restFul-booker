@@ -216,17 +216,20 @@ public class BookingSteps {
     }
 
     public void updateBooking(Booking booking,String token,String id) {
-        response =
-                given().
-                        log().all().
-                        header("Cookie","token="+token).
-                        contentType("application/json").
-                        spec(requestSpec).body(booking).
-                when().
-                        put("https://restful-booker.herokuapp.com/booking/"+id).
-                then().
-                        contentType(ContentType.JSON).
-                        extract().response();
+        try{
+            response =
+                    given().
+                            log().all().
+                            header("Cookie","token="+token).
+                            contentType("application/json").
+                            spec(requestSpec).body(booking).
+                            when().
+                            put("https://restful-booker.herokuapp.com/booking/"+id).
+                            then().
+                            contentType(ContentType.JSON).
+                            extract().response();
+        }catch (Exception e){fail("El api ha cambiado o no se encuentra disponible, revisar reporte.");}
+
     }
 
     public void updatePartialInfoBooking(Booking booking, String token, String id) {
@@ -250,8 +253,11 @@ public class BookingSteps {
     }
 
     public void verifyPartialInfoUpdated() {
-        assertEquals(Utils.booking.getFirstname(),lastResponse().getBody().path("booking.firstname").toString());
-        assertEquals(Utils.booking.getLastname(),lastResponse().getBody().path("booking.lastname").toString());
+        try{
+            assertEquals(Utils.booking.getFirstname(),lastResponse().getBody().path("booking.firstname").toString());
+            assertEquals(Utils.booking.getLastname(),lastResponse().getBody().path("booking.lastname").toString());
+        }catch (Exception e){fail("No se pudo validar el response, verificar que se hizo la petición");}
+
     }
 
     public void deleteBookingById(String id) {

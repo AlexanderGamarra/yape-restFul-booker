@@ -126,7 +126,6 @@ public class BookingStepDefinition {
                             columns.get(6).toString());
                 }
             }
-
             bookingSteps.updateBooking(Utils.booking,Utils.token,Utils.id);
         }catch (Exception e){fail("Ocurrió un error al guardar la información ingresada verificar los valores.");}
 

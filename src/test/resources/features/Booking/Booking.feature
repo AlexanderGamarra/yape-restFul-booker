@@ -78,7 +78,6 @@ Feature: Booking Category
             |{Nombre}           |{Apellido}       |
             |firstNameUpdatedx2 |lastNameUpdatedx2|
     Then  Verifico que el status de la API sea 200
-      And  Verifico que los nombres de la reserva se hayan actualizado exitosamente
 
   @RegressionTest @SmokeTest
   Scenario: Eliminar una reserva por ID
